@@ -32,6 +32,10 @@ public class IndexHandler implements HttpHandler {
                             IndexHandler.class.getResource("/public" + exchange.getRequestURI().getPath())).getPath()));
                 }
 
+                if (exchange.getRequestURI().getPath().endsWith(".css")) {
+                    Response.css(exchange, pageContent);
+                }
+
                 if (exchange.getRequestURI().getPath().endsWith(".ico"))
                     Response.icon(exchange, pageContent);
                 else
