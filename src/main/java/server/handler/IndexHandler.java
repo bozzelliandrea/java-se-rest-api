@@ -9,6 +9,7 @@ import server.util.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 public class IndexHandler implements HttpHandler {
 
@@ -19,21 +20,29 @@ public class IndexHandler implements HttpHandler {
 
         Logger.forRequest(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
 
-        if (exchange.getRequestURI().getPath().equals("/favicon.ico") && exchange.getRequestMethod().equals("GET")) {
+        if (exchange.getRequestMethod().equals("GET")) {
+            try {
+                byte[] pageContent;
 
-            byte[] pageContent = Files.readAllBytes(Paths.get(IndexHandler.class.getResource("/public/favicon.ico").getPath()));
-            Response.icon(exchange, pageContent);
-            Logger.forResponse("favicon.ico");
-        }
+                if (exchange.getRequestURI().getPath().equals(Server.rootPath)) {
+                    pageContent = Files.readAllBytes(Paths.get(Objects.requireNonNull(
+                            IndexHandler.class.getResource("/public/index.html")).getPath()));
+                } else {
+                    pageContent = Files.readAllBytes(Paths.get(Objects.requireNonNull(
+                            IndexHandler.class.getResource("/public" + exchange.getRequestURI().getPath())).getPath()));
+                }
 
-        if (exchange.getRequestURI().getPath().equals(Server.rootPath) && exchange.getRequestMethod().equals("GET")) {
-            byte[] pageContent = Files.readAllBytes(Paths.get(IndexHandler.class.getResource("/public/index.html").getPath()));
-            Response.html(exchange, pageContent);
-            Logger.forResponse("index.html");
-        } else {
-            byte[] pageContent = Files.readAllBytes(Paths.get(IndexHandler.class.getResource("/public/404.html").getPath()));
-            Response.html(exchange, pageContent);
-            Logger.forResponse("404.html");
+                if (exchange.getRequestURI().getPath().endsWith(".ico"))
+                    Response.icon(exchange, pageContent);
+                else
+                    Response.html(exchange, pageContent);
+
+                Logger.forResponse(exchange.getRequestURI().getPath());
+            } catch (NullPointerException npe) {
+                byte[] pageContent = Files.readAllBytes(Paths.get(IndexHandler.class.getResource("/public/404.html").getPath()));
+                Response.html(exchange, pageContent);
+                Logger.forResponse("404.html");
+            }
         }
     }
 }
