@@ -33,6 +33,13 @@ public class Response {
         exchange.getResponseBody().close();
     }
 
+    public static void css(HttpExchange exchange, byte[] stream) throws IOException {
+        exchange.getResponseHeaders().add("Content-Type", "text/css");
+        exchange.sendResponseHeaders(200, stream.length);
+        exchange.getResponseBody().write(stream);
+        exchange.getResponseBody().close();
+    }
+
     public static void e404(HttpExchange exchange, String message) throws IOException {
         byte[] stream = String.format("{ \"message\": \"%s\" }", message).getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json");

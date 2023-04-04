@@ -2,10 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Homepage</title>
+    <title>Car Rental</title>
+    <script src="script/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="icon" href="/favicon.ico">
 </head>
 <body>
-  <h3>Welcome to Car rental</h3>
+<div style="text-align: center">
+    <h3>Welcome to Car rental</h3>
+    <form>
+        <label for="cname">Car name:</label>
+        <input type="text" id="cname" name="cname">
+        <label for="cdesc">Description:</label>
+        <input type="text" id="cdesc" name="cdesc">
+        <label for="ccolor">Color:</label>
+        <input type="text" id="ccolor" name="ccolor">
+    </form>
+    <button onclick="createCar()">Register Car</button>
+    <textarea id="listContent"></textarea>
+</div>
 </body>
 </html>
