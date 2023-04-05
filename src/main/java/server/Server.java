@@ -4,15 +4,12 @@ import com.sun.net.httpserver.HttpServer;
 import server.filter.LoggerFilter;
 import server.handler.CarHandler;
 import server.handler.IndexHandler;
-import server.model.Car;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Server {
 
-    public final static Map<String, Car> dataSource = new HashMap<>();
+
     public final static String carBasePath = "/car";
     public final static String rootPath = "/";
 

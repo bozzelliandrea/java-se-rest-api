@@ -2,18 +2,26 @@ package server.handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import server.model.Car;
-import server.model.Deserializable;
-import server.model.Response;
+import database.model.Car;
+import database.model.Deserializable;
+import database.model.Serializable;
+import database.repository.CarRepository;
+import database.repository.Repository;
+import server.util.Response;
 
 import java.io.IOException;
 
 import static server.Server.carBasePath;
-import static server.Server.dataSource;
 
 public class CarHandler implements HttpHandler {
 
     public static final HttpHandler INSTANCE = new CarHandler();
+
+    private final Repository<Integer, Car> repository;
+
+    public CarHandler() {
+        repository = new CarRepository();
+    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -30,17 +38,10 @@ public class CarHandler implements HttpHandler {
         if (exchange.getRequestMethod().equals("GET")) {
 
             if (exchange.getRequestURI().getPath().endsWith(carBasePath)) {
-                response = response + "[ ";
-                int counter = dataSource.size();
-                for (Car car : dataSource.values()) {
-                    counter--;
-                    response = response + car.serialize() + (counter != 0 ? ',' : "");
-                }
-                response = response + " ]";
+                response = Serializable.forArray(this.repository.findAll());
             } else {
                 String requestId = exchange.getRequestURI().getPath().replace(carBasePath + '/', "");
-
-                response = dataSource.get(requestId).serialize();
+                response = this.repository.findById(Integer.valueOf(requestId)).serialize();
             }
 
             Response.json(exchange, response.getBytes());
@@ -50,8 +51,7 @@ public class CarHandler implements HttpHandler {
         // POST - http://localhost:8000/car -> receive Car Object as JSON format | return Car JSON
         if (exchange.getRequestMethod().equals("POST")) {
             try {
-                Car car = Deserializable.of(exchange.getRequestBody(), new Car());
-                dataSource.put(car.getName(), car);
+                Car car = this.repository.save(Deserializable.of(exchange.getRequestBody(), new Car()));
                 Response.json(exchange, car.serialize().getBytes(), 201);
             } catch (Exception e) {
                 Response.e500(exchange, e.toString());

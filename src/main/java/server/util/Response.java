@@ -1,7 +1,6 @@
-package server.model;
+package server.util;
 
 import com.sun.net.httpserver.HttpExchange;
-import server.util.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
