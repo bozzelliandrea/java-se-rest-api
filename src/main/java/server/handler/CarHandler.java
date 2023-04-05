@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpHandler;
 import server.model.Car;
 import server.model.Deserializable;
 import server.model.Response;
-import server.util.Logger;
 
 import java.io.IOException;
 
@@ -18,8 +17,6 @@ public class CarHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-
-        Logger.forRequest(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
 
         String response = "";
 

@@ -18,7 +18,6 @@ public class IndexHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
-        Logger.forRequest(exchange.getRequestMethod(), exchange.getRequestURI().getPath());
 
         if (exchange.getRequestMethod().equals("GET")) {
             try {
