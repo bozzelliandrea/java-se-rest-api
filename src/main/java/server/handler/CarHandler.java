@@ -26,9 +26,12 @@ public class CarHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
-        String response = "";
+        String response;
 
-        if (!exchange.getRequestMethod().equals("GET") && !exchange.getRequestMethod().equals("POST")) {
+        if (!exchange.getRequestMethod().equals("GET")
+                && !exchange.getRequestMethod().equals("POST")
+                && !exchange.getRequestMethod().equals("PUT")
+                && !exchange.getRequestMethod().equals("DELETE")) {
             Response.e501(exchange, exchange.getRequestMethod());
             return;
         }
@@ -48,13 +51,31 @@ public class CarHandler implements HttpHandler {
             return;
         }
 
-        // POST - http://localhost:8000/car -> receive Car Object as JSON format | return Car JSON
-        if (exchange.getRequestMethod().equals("POST")) {
+        // POST - http://localhost:8000/car -> receive Car Object as JSON format | return Car JSON with 201
+        // PUT - http://localhost:8000/car -> receive Car Object as JSON format and update | return Car JSON with 200
+        if (exchange.getRequestMethod().equals("POST") || exchange.getRequestMethod().equals("PUT")) {
             try {
                 Car car = this.repository.save(Deserializable.of(exchange.getRequestBody(), new Car()));
-                Response.json(exchange, car.serialize().getBytes(), 201);
+                Response.json(exchange,
+                        car.serialize().getBytes(),
+                        exchange.getRequestMethod().equals("POST") ? 201 : 200);
             } catch (Exception e) {
+                e.printStackTrace();
                 Response.e500(exchange, e.toString());
+            }
+        }
+
+        // DELETE - http://localhost:8000/car/:id -> delete Car by Id | return http success/failed code
+        if (exchange.getRequestMethod().equals("DELETE")) {
+            String requestId = exchange.getRequestURI().getPath().replace(carBasePath + '/', "");
+            int res = this.repository.delete(Integer.valueOf(requestId));
+
+            if (res == 1) {
+                Response.json(exchange, new byte[0]);
+            } else if (res == 0) {
+                Response.e400(exchange, "Id not found");
+            } else {
+                Response.e409(exchange, "Multiple Car with same Id found");
             }
         }
     }

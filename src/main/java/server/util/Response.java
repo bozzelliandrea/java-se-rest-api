@@ -43,6 +43,12 @@ public final class Response {
         Logger.forResponseError("Requested resource from client not found");
     }
 
+    public static void e409(HttpExchange exchange, String message) throws IOException {
+        exchange.getResponseHeaders().add("Content-Type", "application/json");
+        flush(exchange, errorMessage(message), 409);
+        Logger.forResponseError("Resource conflict for input request");
+    }
+
     public static void e500(HttpExchange exchange, String message) throws IOException {
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         flush(exchange, errorMessage(message), 500);

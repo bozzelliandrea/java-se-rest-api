@@ -12,8 +12,14 @@ public class Car implements Serializable {
     private String name;
     private String color;
 
-    public String getName() {
-        return this.name;
+    public Car() {
+    }
+
+    public Car(Integer id, String description, String name, String color) {
+        this.id = id;
+        this.description = description;
+        this.name = name;
+        this.color = color;
     }
 
     public void setId(Integer id) {
@@ -28,7 +34,7 @@ public class Car implements Serializable {
     public String serialize() {
         return "{" +
                 "\"id\": \"" + id + '\"' +
-                "\"description\": \"" + description + '\"' +
+                ",\"description\": \"" + description + '\"' +
                 ",\"name\": \"" + name + '\"' +
                 ",\"color\": \"" + color + '\"' +
                 '}';

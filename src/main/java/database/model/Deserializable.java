@@ -26,7 +26,11 @@ public interface Deserializable {
         for (String prop : json.split(",")) {
             Field field = obj.getClass().getDeclaredField(prop.substring(0, prop.indexOf(':')));
             field.setAccessible(true);
-            field.set(obj, prop.substring(prop.indexOf(':') + 1));
+            String val = prop.substring(prop.indexOf(':') + 1);
+            if (field.getType().equals(Integer.class))
+                field.set(obj, Integer.valueOf(val));
+            else
+                field.set(obj, val);
         }
 
         return obj;
