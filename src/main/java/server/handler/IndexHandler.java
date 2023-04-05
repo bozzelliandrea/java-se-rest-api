@@ -3,8 +3,8 @@ package server.handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import server.Server;
-import server.model.Response;
 import server.util.Logger;
+import server.util.Response;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +17,6 @@ public class IndexHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-
 
         if (exchange.getRequestMethod().equals("GET")) {
             try {

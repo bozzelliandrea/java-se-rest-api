@@ -1,4 +1,4 @@
-package server.model;
+package database.model;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
