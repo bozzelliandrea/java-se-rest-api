@@ -25,7 +25,9 @@ public class CarRepository implements Repository<Integer, Car> {
 
     @Override
     public Car save(Car car) {
-        car.setId(MemoryDataLayer.carSequence.incrementAndGet());
+        if (car.getId() == null)
+            car.setId(MemoryDataLayer.carSequence.incrementAndGet());
+
         MemoryDataLayer.car.put(car.getId(), car);
         return car;
     }
