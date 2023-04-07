@@ -24,7 +24,6 @@ jar {
         attributes["Manifest-Version"] = "1.0"
         attributes["Main-Class"] = "server.Server"
     }
-    baseName = 'standard-edition-server'
 }
 
 publishing {
