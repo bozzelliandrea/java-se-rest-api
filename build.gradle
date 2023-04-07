@@ -1,5 +1,5 @@
 plugins {
-    id 'java-library'
+    //id 'java-library'
     id 'application'
     id 'maven-publish'
 }
@@ -45,10 +45,6 @@ publishing {
             }
         }
     }
-}
-
-configurations.archives.artifacts.removeAll {
-    it.extension != 'jar'
 }
 
 mainClassName = 'server.Server'
