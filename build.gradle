@@ -47,4 +47,8 @@ publishing {
     }
 }
 
+configurations.archives.artifacts.removeAll {
+    it.extension != 'jar'
+}
+
 mainClassName = 'server.Server'
