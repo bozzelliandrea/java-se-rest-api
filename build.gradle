@@ -34,6 +34,14 @@ publishing {
       }
     }
   }
+  publications {
+        register("jar", MavenPublication) {
+            from(components["java"])
+            pom {
+                url.set("https://github.com/bozzelliandrea/java-se-rest-api.git")
+            }
+        }
+    }
 }
 
 mainClassName = 'server.Server'
