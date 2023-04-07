@@ -23,7 +23,7 @@ jobs:
           tag: "${{ github.event.inputs.tag }}"
           tag_exists_error: true
           message: "${{ github.event.inputs.tag }} Release"
-  build:
+  create-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
