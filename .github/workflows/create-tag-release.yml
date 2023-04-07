@@ -32,4 +32,5 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         replacesArtifacts: true
+        tag: "${{ github.event.inputs.tag }}"
         prerelease: "${{ github.event.inputs.isPreRelease }}"
