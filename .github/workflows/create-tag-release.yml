@@ -1,4 +1,4 @@
-name: Create Tag
+name: Create Tag and Release
 on:
   workflow_dispatch:
     inputs:
@@ -6,6 +6,12 @@ on:
         description: 'Tag in format <Major>.<Minor>.<Patch>'
         required: true
         type: string
+      isPreRelease:
+        description: 'is that a pre-Release?'
+        required: false
+        default: false
+        type: boolean
+  
 jobs:
   create-tag:
     runs-on: ubuntu-latest
@@ -17,3 +23,13 @@ jobs:
           tag: "${{ github.event.inputs.tag }}"
           tag_exists_error: true
           message: "${{ github.event.inputs.tag }} Release"
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ncipollo/release-action@v1
+      with:
+        replacesArtifacts: true
+        prerelease: "${{ github.event.inputs.isPreRelease }}"
