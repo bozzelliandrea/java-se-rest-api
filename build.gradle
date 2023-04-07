@@ -1,5 +1,5 @@
 plugins {
-    //id 'java-library'
+    id 'java-library'
     id 'application'
     id 'maven-publish'
 }
@@ -23,6 +23,7 @@ jar {
     manifest {
         attributes["Manifest-Version"] = "1.0"
         attributes["Main-Class"] = "server.Server"
+        attributes["Class-Path"] = "/public"
     }
 }
 
