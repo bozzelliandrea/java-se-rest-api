@@ -15,5 +15,5 @@ jobs:
         id: "tag_create"
         with:
           tag: "${{ github.event.inputs.tag }}"
-          tag_exists_error: false
+          tag_exists_error: true
           message: "${{ github.event.inputs.tag }} Release"
