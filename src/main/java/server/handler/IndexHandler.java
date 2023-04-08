@@ -3,13 +3,11 @@ package server.handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import server.Server;
+import server.util.IOUtils;
 import server.util.Logger;
 import server.util.Response;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Objects;
 
 public class IndexHandler implements HttpHandler {
 
@@ -17,17 +15,15 @@ public class IndexHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        byte[] pageContent;
 
         if (exchange.getRequestMethod().equals("GET")) {
             try {
-                byte[] pageContent;
 
                 if (exchange.getRequestURI().getPath().equals(Server.rootPath)) {
-                    pageContent = Files.readAllBytes(Paths.get(Objects.requireNonNull(
-                            IndexHandler.class.getResource("/public/index.html")).getPath()));
+                    pageContent = IOUtils.getByteForFile("/public/index.html");
                 } else {
-                    pageContent = Files.readAllBytes(Paths.get(Objects.requireNonNull(
-                            IndexHandler.class.getResource("/public" + exchange.getRequestURI().getPath())).getPath()));
+                    pageContent = IOUtils.getByteForFile("/public" + exchange.getRequestURI().getPath());
                 }
 
                 if (exchange.getRequestURI().getPath().endsWith(".css")) {
@@ -41,7 +37,7 @@ public class IndexHandler implements HttpHandler {
 
                 Logger.forResponse(exchange.getRequestURI().getPath());
             } catch (NullPointerException npe) {
-                byte[] pageContent = Files.readAllBytes(Paths.get(IndexHandler.class.getResource("/public/404.html").getPath()));
+                pageContent = IOUtils.getByteForFile("/public/404.html");
                 Response.html(exchange, pageContent);
                 Logger.forResponse("404.html");
             }
