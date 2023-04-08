@@ -10,7 +10,7 @@
 <body>
 <div style="text-align: center">
     <h3>Welcome to Car rental</h3>
-    <form>
+    <form id="carForm">
         <label for="cname">Car name:</label>
         <input type="text" id="cname" name="cname">
         <label for="cdesc">Description:</label>
@@ -19,7 +19,14 @@
         <input type="text" id="ccolor" name="ccolor">
     </form>
     <button onclick="createCar()">Register Car</button>
-    <textarea id="listContent"></textarea>
+    <h2>Registered Cars</h2>
+    <table id="carTable">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Color</th>
+        </tr>
+    </table>
 </div>
 </body>
 </html>
