@@ -11,6 +11,11 @@ on:
   workflow_dispatch:
   release:
     types: [created]
+  workflow_run:
+    workflows: ["Create Tag and Release"]
+    types:
+      - completed
+
 
 jobs:
   build:
