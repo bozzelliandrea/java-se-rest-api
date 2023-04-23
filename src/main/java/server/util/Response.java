@@ -37,6 +37,13 @@ public final class Response {
         Logger.forResponseError("Bad request received from client");
     }
 
+    public static void e401(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().add("Content-Type", "application/json");
+        exchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=CenterAppRealm");
+        flush(exchange, errorMessage("Unauthorized"), 401);
+        Logger.forResponseError("Request Unauthorized");
+    }
+
     public static void e404(HttpExchange exchange, String message) throws IOException {
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         flush(exchange, errorMessage(message), 404);
