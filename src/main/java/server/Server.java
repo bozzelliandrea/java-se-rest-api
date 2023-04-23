@@ -1,7 +1,10 @@
 package server;
 
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+import server.filter.JWTAuthFilter;
 import server.filter.LoggerFilter;
+import server.handler.AuthHandler;
 import server.handler.CarHandler;
 import server.handler.IndexHandler;
 
@@ -11,6 +14,7 @@ public class Server {
 
 
     public final static String carBasePath = "/car";
+    public final static String authBasePath = "/auth";
     public final static String rootPath = "/";
 
     public static void main(String[] args) throws Exception {
@@ -19,8 +23,12 @@ public class Server {
         server.createContext(rootPath, IndexHandler.INSTANCE)
                 .getFilters().add(new LoggerFilter());
 
-        server.createContext(carBasePath, CarHandler.INSTANCE)
+        server.createContext(authBasePath, AuthHandler.INSTANCE)
                 .getFilters().add(new LoggerFilter());
+
+        HttpContext carContext = server.createContext(carBasePath, CarHandler.INSTANCE);
+        carContext.getFilters().add(new LoggerFilter());
+        carContext.setAuthenticator(new JWTAuthFilter());
 
         server.setExecutor(null);
         server.start();
