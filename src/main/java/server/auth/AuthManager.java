@@ -2,6 +2,8 @@ package server.auth;
 
 import database.MemoryDataLayer;
 import database.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -16,6 +18,7 @@ import java.util.UUID;
 
 public final class AuthManager {
 
+    public final static String realm = "CenterAppRealm";
     public final static String secret = "asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4";
     public final static Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
             SignatureAlgorithm.HS256.getJcaName());
@@ -25,29 +28,41 @@ public final class AuthManager {
         if (!request.isValid())
             return Optional.empty();
 
-        User user = new User(MemoryDataLayer.userSequence.incrementAndGet(),
-                request.getUsername(),
+        User user = new User(request.getUsername(),
                 request.getEmail(),
                 request.getPassword());
 
-        MemoryDataLayer.user.put(user.getId(), user);
+        MemoryDataLayer.user.put(user.getName(), user);
 
         return Optional.of(generateToken(request.getUsername()));
     }
 
-    public static String login(AuthRequest.Login request) {
+    public static Optional<String> login(AuthRequest.Login request) {
 
-        return "";
+        if (!request.isValid())
+            return Optional.empty();
+
+        if (MemoryDataLayer.user.containsKey(request.getUsername())) {
+            return Optional.of(generateToken(request.getUsername()));
+        } else {
+            return Optional.empty();
+        }
     }
 
-    public static String login(String token) {
-        return "";
+    public static String logout(String token) {
+        String username = validateToken(token);
 
+        MemoryDataLayer.jwtBlacklist.add(token);
+
+        return username;
     }
 
     public static String refresh(String token) {
-        return "";
+        if (MemoryDataLayer.jwtBlacklist.contains(token))
+            return null;
 
+        String username = validateToken(token);
+        return generateToken(username);
     }
 
     private static String generateToken(String username) {
@@ -59,5 +74,14 @@ public final class AuthManager {
                 .setExpiration(Date.from(now.plus(5L, ChronoUnit.MINUTES)))
                 .signWith(hmacKey)
                 .compact();
+    }
+
+    public static String validateToken(String token) {
+        Jws<Claims> jwt = Jwts.parserBuilder()
+                .setSigningKey(hmacKey)
+                .build()
+                .parseClaimsJws(token);
+
+        return (String) jwt.getBody().get("name");
     }
 }

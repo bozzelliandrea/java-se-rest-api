@@ -78,5 +78,7 @@ public class CarHandler implements HttpHandler {
                 Response.e409(exchange, "Multiple Car with same Id found");
             }
         }
+
+        Response.e404(exchange, "Invalid request");
     }
 }

@@ -26,9 +26,12 @@ dependencies {
 
 jar {
     manifest {
-        attributes["Manifest-Version"] = "1.0"
+        attributes["Manifest-Version"] = project.version
         attributes["Main-Class"] = "server.Server"
+        attributes["Implementation-Vendor"] = project.group
         attributes["Class-Path"] = "/public"
+        attributes["Built-By"] = "abozzelli"
+        attributes["Built-Date"] = new Date().format("yyyy-MM-dd HH:mm:ssZ")
     }
 }
 

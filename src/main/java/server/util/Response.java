@@ -5,6 +5,8 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static server.auth.AuthManager.realm;
+
 public final class Response {
 
     public static void json(HttpExchange exchange, byte[] stream) {
@@ -39,7 +41,7 @@ public final class Response {
 
     public static void e401(HttpExchange exchange) {
         exchange.getResponseHeaders().add("Content-Type", "application/json");
-        exchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=CenterAppRealm");
+        exchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=" + realm);
         flush(exchange, errorMessage("Unauthorized"), 401);
         Logger.forResponseError("Request Unauthorized");
     }

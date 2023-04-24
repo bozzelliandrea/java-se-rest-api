@@ -3,19 +3,12 @@ package server.handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import database.model.Deserializable;
-import io.jsonwebtoken.Jwts;
 import server.Server;
 import server.auth.AuthManager;
 import server.auth.AuthRequest;
 import server.util.Response;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
-
-import static server.auth.AuthManager.hmacKey;
 
 
 public class AuthHandler implements HttpHandler {
@@ -31,7 +24,9 @@ public class AuthHandler implements HttpHandler {
             return;
         }
 
-        if (exchange.getRequestURI().getPath().equals(Server.authBasePath + "/register")) {
+        if (exchange.getRequestMethod().equals("POST")
+                && exchange.getRequestURI().getPath().equals(Server.authBasePath + "/register")) {
+
             AuthRequest.Register request = null;
             try {
                 request = Deserializable.of(exchange.getRequestBody(), new AuthRequest.Register());
@@ -40,7 +35,6 @@ public class AuthHandler implements HttpHandler {
                 Response.e400(exchange, e.toString());
                 return;
             }
-
 
             Optional<String> token = AuthManager.register(request);
 
@@ -54,34 +48,50 @@ public class AuthHandler implements HttpHandler {
             return;
         }
 
-        if (exchange.getRequestURI().getPath().equals(Server.authBasePath + "/login")) {
+        if (exchange.getRequestMethod().equals("POST")
+                && exchange.getRequestURI().getPath().equals(Server.authBasePath + "/login")) {
 
-            Instant now = Instant.now();
-            exchange.getResponseHeaders().add("Authorization",
-                    Jwts.builder()
-                            .claim("name", "Jane Doe")
-                            .claim("email", "jane@example.com")
-                            .setSubject("jane")
-                            .setId(UUID.randomUUID().toString())
-                            .setIssuedAt(Date.from(now))
-                            .setExpiration(Date.from(now.plus(5L, ChronoUnit.MINUTES)))
-                            .signWith(hmacKey)
-                            .compact());
+            AuthRequest.Login request = null;
 
-            Response.json(exchange, new byte[]{});
+            try {
+                request = Deserializable.of(exchange.getRequestBody(), new AuthRequest.Login());
+            } catch (Exception e) {
+                e.printStackTrace();
+                Response.e400(exchange, e.toString());
+                return;
+            }
+
+            Optional<String> token = AuthManager.login(request);
+
+            if (!token.isPresent()) {
+                Response.e404(exchange, "User not registered");
+                return;
+            }
+
+            exchange.getResponseHeaders().add("Authorization", token.get());
+            Response.json(exchange, new byte[0]);
             return;
         }
 
-        if (exchange.getRequestURI().getPath().equals(Server.authBasePath + "/logout")) {
+        if (exchange.getRequestMethod().equals("HEAD")
+                && exchange.getRequestURI().getPath().equals(Server.authBasePath + "/logout")) {
 
-            Response.json(exchange, new byte[]{});
+            AuthManager.logout(exchange.getRequestHeaders().get("Authorization").get(0));
+
+            Response.json(exchange, new byte[0]);
             return;
         }
 
-        if (exchange.getRequestURI().getPath().equals(Server.authBasePath + "/refresh")) {
+        if (exchange.getRequestMethod().equals("HEAD")
+                && exchange.getRequestURI().getPath().equals(Server.authBasePath + "/refresh")) {
 
-            Response.json(exchange, new byte[]{});
+            String token = AuthManager.refresh(exchange.getRequestHeaders().get("Authorization").get(0));
+
+            exchange.getResponseHeaders().add("Authorization", token);
+            Response.json(exchange, new byte[0]);
         }
+
+        Response.e404(exchange, "Invalid request");
     }
 
 }

@@ -4,15 +4,17 @@ import database.model.Car;
 import database.model.User;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MemoryDataLayer {
 
     public static final Map<Integer, Car> car = new HashMap<>();
     public static final AtomicInteger carSequence = new AtomicInteger();
-    public static final Map<Integer, User> user = new HashMap<>();
-    public static final AtomicInteger userSequence = new AtomicInteger();
+    public static final Map<String, User> user = new HashMap<>();
+    public static final Set<String> jwtBlacklist = new HashSet<>();
 
     static {
         Car c = new Car(carSequence.incrementAndGet(),
@@ -31,10 +33,9 @@ public class MemoryDataLayer {
                 "rust");
         car.put(c.getId(), c);
 
-        User admin = new User(userSequence.incrementAndGet(),
-                "admin",
+        User admin = new User("admin",
                 "admin@server.com",
                 "admin");
-        user.put(admin.getId(), admin);
+        user.put(admin.getName(), admin);
     }
 }
