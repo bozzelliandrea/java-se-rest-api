@@ -1,12 +1,7 @@
 package database.model;
 
-import database.repository.AutoGenerateId;
-import database.repository.Id;
-
-@AutoGenerateId
 public class Car implements Serializable {
 
-    @Id
     private Integer id;
     private String description;
     private String name;

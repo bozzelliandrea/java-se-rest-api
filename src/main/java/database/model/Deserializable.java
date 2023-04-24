@@ -24,7 +24,13 @@ public interface Deserializable {
         String json = textBuilder.toString().replaceAll("[ \n{}\"]", "");
 
         for (String prop : json.split(",")) {
-            Field field = obj.getClass().getDeclaredField(prop.substring(0, prop.indexOf(':')));
+            Field field = null;
+            try {
+                field = obj.getClass().getDeclaredField(prop.substring(0, prop.indexOf(':')));
+            } catch (NoSuchFieldException exception) {
+                field = obj.getClass().getSuperclass().getDeclaredField(prop.substring(0, prop.indexOf(':')));
+            }
+
             field.setAccessible(true);
             String val = prop.substring(prop.indexOf(':') + 1);
             if (field.getType().equals(Integer.class))
