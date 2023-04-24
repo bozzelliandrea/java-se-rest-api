@@ -21,7 +21,10 @@ public final class AuthRequest {
 
         @Override
         public String serialize() {
-            return super.serialize();
+            return "{" +
+                    "\"username\": \"" + username + '\"' +
+                    ",\"email\": \"" + email + '\"' +
+                    '}';
         }
     }
 
@@ -51,7 +54,9 @@ public final class AuthRequest {
 
         @Override
         public String serialize() {
-            return null;
+            return "{" +
+                    "\"username\": \"" + username + '\"' +
+                    '}';
         }
     }
 }
